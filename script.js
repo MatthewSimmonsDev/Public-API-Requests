@@ -1,6 +1,7 @@
 const gallery = document.querySelector('#gallery');
 gallery.innerHTML = '';
 
+// fetch randomuser api
 fetch('https://randomuser.me/api/?results=12')
 .then(response => response.json())
 .then(data => { 
@@ -9,7 +10,7 @@ fetch('https://randomuser.me/api/?results=12')
   modal(userData);
 })
   
-  
+// creates the 12 users gallery 
 function appendUsers(data){
   for(let i = 0; i < data.length; i++){
   gallery.innerHTML += `
@@ -28,6 +29,7 @@ function appendUsers(data){
   
 }
 
+// creates the modal window with all specifications
 function modal(data){
   for(let i = 0; i < data.length; i++){
     let users = document.querySelectorAll('.card')
@@ -39,12 +41,12 @@ function modal(data){
             <div class="modal-info-container">
             <img class="modal-img" src="${data[i].picture.large}" alt="profile picture">
             <h3 id="name" class="modal-name cap">${data[i].name.first} ${data[i].name.last}</h3>
-            <p class="modal-text">email</p>
-            <p class="modal-text cap">city</p>
+            <p class="modal-text">${data[i].email}</p>
+            <p class="modal-text cap">${data[i].location.city}</p>
             <hr>
-            <p class="modal-text">(555) 555-5555</p>
-            <p class="modal-text">123 Portland Ave., Portland, OR 97204</p>
-            <p class="modal-text">Birthday: 10/21/2015</p>
+            <p class="modal-text">${formatPhone(data[i].cell)}</p>
+            <p class="modal-text">${data[i].location.street.number} ${data[i].location.street.name}, ${data[i].location.city}, ${data[i].location.state} ${data[i].location.postcode}</p>
+            <p class="modal-text">Birthday: ${formatDate(data[i].dob.date)}</p>
           </div>
         </div>
       </div>`
@@ -56,4 +58,25 @@ function modal(data){
     })
 
   }
+}
+
+// Helper function to format phone numbers
+function formatPhone(phone) {
+  //normalize string and remove all unnecessary characters
+  phone = phone.replace(/[^\d]/g, "");
+
+  //check if number length equals to 10
+  if (phone.length == 10) {
+      //reformat and return phone number
+      return phone.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
+  }
+
+  return 'incorrect phone number format';
+}
+
+// Helper function to format date
+function formatDate(date){
+  let myDate = new Date(date)
+  let output = myDate.getDate() + "\\" +  (myDate.getMonth()+1) + "\\" + myDate.getFullYear();
+  return output;
 }
